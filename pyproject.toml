@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alexandria-code-intelligence"
+version = "0.1.0"
+description = "A biologically-inspired MCP server for autonomous codebase analysis, healing & architectural observability."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Gabriel Andreu"},
+]
+keywords = ["mcp", "code-intelligence", "static-analysis", "active-inference", "free-energy-principle"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Quality Assurance",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastmcp>=2.0.0",
+    "networkx>=3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[project.scripts]
+aci-server = "aci.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

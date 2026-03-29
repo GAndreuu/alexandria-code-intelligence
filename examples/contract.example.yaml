@@ -1,0 +1,65 @@
+# ═══════════════════════════════════════════════════════════════
+# Alexandria Code Intelligence — Quality Contract (Example)
+# ═══════════════════════════════════════════════════════════════
+#
+# Drop this file into your project as:
+#   .aci/contract.yaml   OR   .aci.yaml
+#
+# ACI will auto-discover it and use these rules to audit your code.
+# Any rule you omit will use sensible defaults.
+# ═══════════════════════════════════════════════════════════════
+
+name: "my-project"
+
+rules:
+  # ── Structural Limits ────────────────────────────────────────
+  max_loc_per_class: 300       # Classes above this LOC trigger "God Class" warnings
+  max_loc_per_file: 500        # Files above this LOC are flagged for splitting
+  max_function_args: 6         # Functions with more args suggest a design problem
+
+  # ── Required Patterns ────────────────────────────────────────
+  require_docstrings: true     # Every public class/function must have a docstring
+  require_type_hints: false    # Enforce type annotations on function signatures
+  require_test_file: true      # Every module should have a corresponding test_*.py
+  require_logger: true         # Every module should use logging (not print)
+  require_config_dataclass: false  # Require a @dataclass Config in each module
+
+  # ── Forbidden Patterns ──────────────────────────────────────
+  forbid_bare_except: true     # No `except:` without specifying the exception type
+  forbid_print_statements: true  # Use logger instead of print()
+  forbid_magic_numbers: true   # No unexplained numeric literals (use named constants)
+  forbid_fstring_logs: false   # Forbid logger.info(f"...") (use % formatting instead)
+
+  # ── Architecture Layers ─────────────────────────────────────
+  # Define your project's layer hierarchy. Higher layers can import
+  # lower layers, but NOT the reverse. This prevents circular coupling.
+  #
+  # Example: a 3-layer web app
+  layers:
+    L1_models:
+      - "models/"
+      - "schemas/"
+    L2_services:
+      - "services/"
+      - "utils/"
+    L3_api:
+      - "api/"
+      - "routes/"
+      - "views/"
+
+  layer_direction: "up"  # L3 can import L2, L2 can import L1, but not backwards
+
+  # ── Custom Anti-Patterns ────────────────────────────────────
+  # Define your own regex rules. ACI will scan every .py file for matches.
+  custom:
+    - pattern: "time\\.sleep\\("
+      message: "Avoid time.sleep() in production code — use async or scheduler"
+      severity: "warning"
+
+    - pattern: "TODO|FIXME|HACK"
+      message: "Unresolved TODO/FIXME found"
+      severity: "info"
+
+    - pattern: "os\\.system\\("
+      message: "Use subprocess.run() instead of os.system()"
+      severity: "error"
